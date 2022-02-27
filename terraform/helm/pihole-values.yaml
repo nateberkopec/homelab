@@ -1,0 +1,9 @@
+dnsmasq:
+  customDnsEntries:
+    - address=/meerkat/192.168.50.3
+
+persistentVolumeClaim:
+  enabled: true
+
+serviceWeb:
+  type: "NodePort"

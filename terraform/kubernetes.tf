@@ -3,6 +3,9 @@ terraform {
     kubernetes = {
       source = "hashicorp/kubernetes"
     }
+    helm = { 
+      source = "hashicorp/helm"
+    }
   }
 }
 
@@ -23,73 +26,21 @@ variable "cluster_ca_certificate" {
 }
 
 provider "kubernetes" {
-  host = var.host
-
-  client_certificate     = base64decode(var.client_certificate)
-  client_key             = base64decode(var.client_key)
-  cluster_ca_certificate = base64decode(var.cluster_ca_certificate)
+  config_path = "../kubeconfig"
 }
 
-resource "kubernetes_deployment" "nginx" {
-  metadata {
-    name = "scalable-nginx-example"
-    labels = {
-      App = "ScalableNginxExample"
-    }
-  }
-
-  spec {
-    replicas = 4
-    selector {
-      match_labels = {
-        App = "ScalableNginxExample"
-      }
-    }
-    template {
-      metadata {
-        labels = {
-          App = "ScalableNginxExample"
-        }
-      }
-      spec {
-        container {
-          image = "nginx:1.7.8"
-          name  = "example"
-
-          port {
-            container_port = 80
-          }
-
-          resources {
-            limits = {
-              cpu    = "0.5"
-              memory = "512Mi"
-            }
-            requests = {
-              cpu    = "250m"
-              memory = "50Mi"
-            }
-          }
-        }
-      }
-    }
+provider "helm" {
+  kubernetes {
+    config_path = "../kubeconfig"
   }
 }
 
-resource "kubernetes_service" "nginx" {
-  metadata {
-    name = "nginx-example"
-  }
-  spec {
-    selector = {
-      App = kubernetes_deployment.nginx.spec.0.template.0.metadata[0].labels.App
-    }
-    port {
-      node_port   = 30201
-      port        = 80
-      target_port = 80
-    }
+resource "helm_release" "pihole" {
+  name       = "pihole"
+  repository = "https://mojo2600.github.io/pihole-kubernetes/"
+  chart      = "pihole"
 
-    type = "NodePort"
-  }
+  values = [
+    file("${path.module}/helm/pihole-values.yaml")
+  ]
 }
