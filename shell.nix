@@ -1,3 +1,3 @@
 with import <nixpkgs> {};
 
-mkShell { packages = [ kubectl ]; }
+mkShell { packages = [ kubectl terraform ]; }
