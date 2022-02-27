@@ -44,3 +44,13 @@ resource "helm_release" "pihole" {
     file("${path.module}/helm/pihole-values.yaml")
   ]
 }
+
+resource "helm_release" "home-assistant" {
+  name        = "home-assistant"
+  repository  = "https://k8s-at-home.com/charts/"
+  chart       = "home-assistant"
+
+  values = [
+    file("${path.module}/helm/home-assistant-values.yaml")
+  ]
+}
