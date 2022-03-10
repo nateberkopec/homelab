@@ -35,6 +35,23 @@ provider "helm" {
   }
 }
 
+resource "kubernetes_service" "pihole_lb" {
+  metadata {
+    name = "pihole-lb"
+  }
+  spec {
+    selector = {
+      app = "pihole"
+    }
+    port {
+      port        = 53
+      target_port = 53
+    }
+
+    type = "LoadBalancer"
+  }
+}
+
 resource "helm_release" "pihole" {
   name       = "pihole"
   repository = "https://mojo2600.github.io/pihole-kubernetes/"
@@ -45,6 +62,7 @@ resource "helm_release" "pihole" {
   ]
 }
 
+/*
 resource "helm_release" "home-assistant" {
   name        = "home-assistant"
   repository  = "https://k8s-at-home.com/charts/"
@@ -54,3 +72,4 @@ resource "helm_release" "home-assistant" {
     file("${path.module}/helm/home-assistant-values.yaml")
   ]
 }
+*/

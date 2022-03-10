@@ -1,9 +1,18 @@
 dnsmasq:
   customDnsEntries:
     - address=/meerkat/192.168.50.3
+    - address=/lab.home.arpa/192.168.50.3
+
+  customSettings:
+    - interface=eth0
 
 persistentVolumeClaim:
   enabled: true
 
-serviceWeb:
-  type: "NodePort"
+ingress:
+  enabled: true 
+  hosts:
+    - lab.home.arpa
+
+serviceDns:
+  type: LoadBalancer
