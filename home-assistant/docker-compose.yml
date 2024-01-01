@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  homeassistant:
+    container_name: home-assistant
+    image: homeassistant/home-assistant
+    environment:
+      # This is the required way to set a timezone on macOS and differs from the Linux compose file
+      - TZ=Asia/Tokyo
+    volumes:
+      - ./config:/config
+    restart: always
+    ports:
+      # Also required for macOS since the network directive in docker-compose does not work
+      - "8123:8123"
+
+# Add this or docker-compose will complain that it did not find the key for locally mapped volume
+volumes:
+  config:
